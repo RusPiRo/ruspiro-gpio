@@ -1,0 +1,19 @@
+[package]
+name = "ruspiro-gpio"
+authors = ["André Borrmann <pspwizard@gmx.de>"]
+version = "0.0.1" # remember to update html_root_url
+description = ""
+license = "LICENSE"
+repository = "https://github.com/RusPiRo/ruspiro-gpio"
+readme = "README.md"
+keywords = []
+categories = []
+edition = "2018"
+
+[lib]
+
+[dependencies]
+ruspiro-singleton = { git = "https://github.com/RusPiRo/ruspiro-singleton" }
+ruspiro-register = { git = "https://github.com/RusPiRo/ruspiro-register" }
+
+[features]
