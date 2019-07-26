@@ -6,14 +6,16 @@ description = ""
 license = "LICENSE"
 repository = "https://github.com/RusPiRo/ruspiro-gpio"
 readme = "README.md"
-keywords = []
-categories = []
+keywords = ["ruspiro"]
+categories = ["no_std"]
 edition = "2018"
 
 [lib]
+
 
 [dependencies]
 ruspiro-singleton = { git = "https://github.com/RusPiRo/ruspiro-singleton" }
 ruspiro-register = { git = "https://github.com/RusPiRo/ruspiro-register" }
 
 [features]
+
