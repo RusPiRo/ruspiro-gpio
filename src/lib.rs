@@ -6,6 +6,7 @@
  **********************************************************************************************************************/
 #![doc(html_root_url = "https://docs.rs/ruspiro-gpio/0.0.1")]
 #![no_std]
+#![feature(asm)]
 
 //! # Raspberry GPIO access abstraction
 //! Implementation of a simple and safe API to access Raspberry Pi3 GPIO's.

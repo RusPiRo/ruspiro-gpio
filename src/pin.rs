@@ -204,11 +204,11 @@ impl<FUNC, PUD> Pin<FUNC, PUD> {
         // 1. write the desired pud control value to the PUD control register
         GPPUD::Register.modify(GPPUD::PUD, pud as u32);
         // 2. wait 150 cycles
-        //sleepcycles(150);
+        for _ in 0..150 { unsafe { asm!("NOP") } };
         // 3. write the pin to upate into the PUDCLCK register
         self.config.pudclk.set(self.config.pud_val);
         // 4. wait 150 cycles to settle the new settings
-        //sleepcycles(150);
+        for _ in 0..150 { unsafe { asm!("NOP") } };
         // 5. clear the pud control value in the PUD control register
         GPPUD::Register.set(0x0);
         // 6. write the pin to the PUDCLCK register again to finish the update cycle
