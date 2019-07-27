@@ -4,18 +4,16 @@ authors = ["André Borrmann <pspwizard@gmx.de>"]
 version = "0.0.1" # remember to update html_root_url
 description = ""
 license = "LICENSE"
-repository = "https://github.com/RusPiRo/ruspiro-gpio"
+repository = "https://github.com/RusPiRo/ruspiro-gpio/tree/v0.0.1"
 readme = "README.md"
-keywords = ["ruspiro"]
+keywords = ["ruspiro", "gpio", "baremetal", "raspberry-pi"]
 categories = ["no_std"]
 edition = "2018"
 
 [lib]
 
-
 [dependencies]
-ruspiro-singleton = { git = "https://github.com/RusPiRo/ruspiro-singleton" }
-ruspiro-register = { git = "https://github.com/RusPiRo/ruspiro-register" }
+ruspiro-singleton = { git = "https://github.com/RusPiRo/ruspiro-singleton", tag = "v0.0.1" }
+ruspiro-register = { git = "https://github.com/RusPiRo/ruspiro-register", tag = "v0.0.1" }
 
 [features]
-

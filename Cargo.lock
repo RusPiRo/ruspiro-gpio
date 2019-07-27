@@ -4,29 +4,29 @@
 name = "ruspiro-gpio"
 version = "0.0.1"
 dependencies = [
- "ruspiro-register 0.0.1 (git+https://github.com/RusPiRo/ruspiro-register)",
- "ruspiro-singleton 0.0.1 (git+https://github.com/RusPiRo/ruspiro-singleton)",
+ "ruspiro-register 0.0.1 (git+https://github.com/RusPiRo/ruspiro-register?tag=v0.0.1)",
+ "ruspiro-singleton 0.0.1 (git+https://github.com/RusPiRo/ruspiro-singleton?tag=v0.0.1)",
 ]
 
 [[package]]
 name = "ruspiro-lock"
 version = "0.0.1"
-source = "git+https://github.com/RusPiRo/ruspiro-lock#fc4a52a130e5254c6f2fab9343031030d92a96c8"
+source = "git+https://github.com/RusPiRo/ruspiro-lock?tag=v0.0.1#bcf1daa213559d5a629c1a201e15a35cae3c7005"
 
 [[package]]
 name = "ruspiro-register"
 version = "0.0.1"
-source = "git+https://github.com/RusPiRo/ruspiro-register#97147dfddc4e72955ef5206e9764648d52ca76f2"
+source = "git+https://github.com/RusPiRo/ruspiro-register?tag=v0.0.1#ddad2f1ae3f0a3211207bf7566a9812aa9ac93a0"
 
 [[package]]
 name = "ruspiro-singleton"
 version = "0.0.1"
-source = "git+https://github.com/RusPiRo/ruspiro-singleton#e6b717fb55ec4e9cea9699072f2fda695569547d"
+source = "git+https://github.com/RusPiRo/ruspiro-singleton?tag=v0.0.1#1c63099f4abcd8fef7f1ebe29b72caa9c966c6ab"
 dependencies = [
- "ruspiro-lock 0.0.1 (git+https://github.com/RusPiRo/ruspiro-lock)",
+ "ruspiro-lock 0.0.1 (git+https://github.com/RusPiRo/ruspiro-lock?tag=v0.0.1)",
 ]
 
 [metadata]
-"checksum ruspiro-lock 0.0.1 (git+https://github.com/RusPiRo/ruspiro-lock)" = "<none>"
-"checksum ruspiro-register 0.0.1 (git+https://github.com/RusPiRo/ruspiro-register)" = "<none>"
-"checksum ruspiro-singleton 0.0.1 (git+https://github.com/RusPiRo/ruspiro-singleton)" = "<none>"
+"checksum ruspiro-lock 0.0.1 (git+https://github.com/RusPiRo/ruspiro-lock?tag=v0.0.1)" = "<none>"
+"checksum ruspiro-register 0.0.1 (git+https://github.com/RusPiRo/ruspiro-register?tag=v0.0.1)" = "<none>"
+"checksum ruspiro-singleton 0.0.1 (git+https://github.com/RusPiRo/ruspiro-singleton?tag=v0.0.1)" = "<none>"
