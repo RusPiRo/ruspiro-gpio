@@ -41,10 +41,10 @@ impl Gpio {
     }
 
     /// Get a new pin for further usage, the function of the pin is initially undefined/unknown
-    /// Returns an Err(()) if the pin is already in use, otherwise an Ok(Pin)
-    pub fn get_pin(&mut self, num: u32) -> Result<Pin<function::Unknown, pud::Unknown>, ()> {
+    /// Returns an Err(str) if the pin is already in use, otherwise an Ok(Pin)
+    pub fn get_pin(&mut self, num: u32) -> Result<Pin<function::Unknown, pud::Unknown>, &'static str> {
         if self.used_pins[num as usize] {
-            Err(())
+            Err("requested pin already in use")
         } else {
             self.used_pins[num as usize] = true;
             Ok(Pin::<function::Unknown, pud::Unknown>::new(num))
@@ -57,11 +57,5 @@ impl Gpio {
         if self.used_pins[num as usize] {
             self.used_pins[num as usize] = false;
         };
-    }
-
-    pub fn free_pin2<F, P>(&mut self, pin: Pin<F, P>) {
-        if self.used_pins[pin.num as usize] {
-            self.used_pins[pin.num as usize] = false;
-        }
     }
 }
