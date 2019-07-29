@@ -2,31 +2,31 @@
 # It is not intended for manual editing.
 [[package]]
 name = "ruspiro-gpio"
-version = "0.0.1"
+version = "0.0.2"
 dependencies = [
- "ruspiro-register 0.0.1 (git+https://github.com/RusPiRo/ruspiro-register?tag=v0.0.1)",
- "ruspiro-singleton 0.0.1 (git+https://github.com/RusPiRo/ruspiro-singleton?tag=v0.0.1)",
+ "ruspiro-register 0.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "ruspiro-singleton 0.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
 name = "ruspiro-lock"
-version = "0.0.1"
-source = "git+https://github.com/RusPiRo/ruspiro-lock?tag=v0.0.1#bcf1daa213559d5a629c1a201e15a35cae3c7005"
+version = "0.0.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "ruspiro-register"
-version = "0.0.1"
-source = "git+https://github.com/RusPiRo/ruspiro-register?tag=v0.0.1#ddad2f1ae3f0a3211207bf7566a9812aa9ac93a0"
+version = "0.0.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "ruspiro-singleton"
-version = "0.0.1"
-source = "git+https://github.com/RusPiRo/ruspiro-singleton?tag=v0.0.1#1c63099f4abcd8fef7f1ebe29b72caa9c966c6ab"
+version = "0.0.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
- "ruspiro-lock 0.0.1 (git+https://github.com/RusPiRo/ruspiro-lock?tag=v0.0.1)",
+ "ruspiro-lock 0.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [metadata]
-"checksum ruspiro-lock 0.0.1 (git+https://github.com/RusPiRo/ruspiro-lock?tag=v0.0.1)" = "<none>"
-"checksum ruspiro-register 0.0.1 (git+https://github.com/RusPiRo/ruspiro-register?tag=v0.0.1)" = "<none>"
-"checksum ruspiro-singleton 0.0.1 (git+https://github.com/RusPiRo/ruspiro-singleton?tag=v0.0.1)" = "<none>"
+"checksum ruspiro-lock 0.0.2 (registry+https://github.com/rust-lang/crates.io-index)" = "747f64668f050f30cba05098c28bc29a732dbc6a85fa33c6a4f3f0bc8040ee5e"
+"checksum ruspiro-register 0.0.2 (registry+https://github.com/rust-lang/crates.io-index)" = "fda8916cf067f9c59518c6a32af1bef57d2c2a7a02cf75326954f0b6e1f0c3a1"
+"checksum ruspiro-singleton 0.0.2 (registry+https://github.com/rust-lang/crates.io-index)" = "4334df6bb425fc777b98ad4b8072d992a600995dfb26c1f40f3cf51f463c7c03"

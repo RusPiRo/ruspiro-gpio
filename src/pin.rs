@@ -4,13 +4,12 @@
  * Author: André Borrmann 
  * License: Appache License 2.0
  **********************************************************************************************************************/
-
-//! # Title goes here
+//! # Definition of GPIO Pins
+//! 
 //! Implementation of a GPIO Pin and its functions. The purpose and current state of each pin is encapsulated with a
 //! zero-sizes-type generics argument to ensure compile time safety when using a pin that has specific requirements
 //! 
 use ruspiro_register::{define_registers, ReadWrite, WriteOnly, RegisterField};
-//use rubots_lib::timer::sleepcycles;
 
 /// Representation of a GPIO pin that can have specific features. Those features are described with generic arguments to
 /// define the pin e.g. as an output pin with disabled PullUp/Down.

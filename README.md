@@ -1,12 +1,15 @@
 # RusPiRo GPIO access abstraction for Raspberry Pi
 
-This crate provide as simple to use and safe abstraction of the GPIO's available on the Raspberry Pi 3.
+This crate provide as simple to use and safe abstraction of the GPIO's available on the Raspberry Pi 3. The GPIO 
+configuration requires access to MMIO registers with a specific memory base address. As this might differ between
+different models the right address is choosen based on the given ``target_family`` while compiling. The value needed
+for a Raspberry Pi 3 is ``ruspiro-pi3``.
 
 ## Usage
 To use the crate just add the following dependency to your ``Cargo.toml`` file:
 ```
 [dependencies]
-ruspiro-gpio = { git = "https://github.com/RusPiRo/ruspiro-gpio", tag = "v0.0.1" }
+ruspiro-gpio = "0.0.2"
 ```
 
 Once done the access to the GPIO abstraction is available in your rust files like so:
