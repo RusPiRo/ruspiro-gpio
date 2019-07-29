@@ -37,6 +37,9 @@ pub use self::pin::*;
 #[cfg(target_family="ruspiro-pi3")]
 const PERIPHERAL_BASE: u32 = 0x3F00_0000;
 
+#[cfg(not(target_family="ruspiro-pi3"))]
+const PERIPHERAL_BASE: u32 = 0x2000_0000;
+
 /// Base address for GPIO MMIO registers
 const GPIO_BASE: u32 = PERIPHERAL_BASE + 0x0020_0000;
 
