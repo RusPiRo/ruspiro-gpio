@@ -11,6 +11,7 @@ different models the right address is choosen based on the given ``ruspiro_pi3``
 
 
 ## Usage
+
 To use the crate just add the following dependency to your ``Cargo.toml`` file:
 ```
 [dependencies]
