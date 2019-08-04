@@ -4,14 +4,14 @@
  * Author: André Borrmann 
  * License: Appache License 2.0
  **********************************************************************************************************************/
-#![doc(html_root_url = "https://docs.rs/ruspiro-gpio/0.0.2")]
+#![doc(html_root_url = "https://docs.rs/ruspiro-gpio/0.1.0")]
 #![no_std]
 #![feature(asm)]
 //! # Raspberry Pi GPIO access abstraction
-//! Implementation of a simple and safe API to access Raspberry Pi3 GPIO's. The GPIO configuration requires access to
-//! MMIO registers with a specific memory base address. As this might differ between different models the right
-//! address is choosen based on the given ``target_family`` while compiling. The value needed for a Raspberry Pi 3 is
-//! ``ruspiro-pi3``.
+//! 
+//! This crate provide as simple to use and safe abstraction of the GPIO's available on the Raspberry Pi 3. The GPIO 
+//! configuration requires access to MMIO registers with a specific memory base address. As this might differ between
+//! different models the right address is choosen based on the given ``ruspiro_pi3`` feature while compiling.
 //! 
 //! # Usage
 //! 
@@ -32,16 +32,6 @@ use ruspiro_singleton::Singleton;
 
 pub mod pin;
 pub use self::pin::*;
-
-// MMIO peripheral base address based on the target family provided with the custom target config file.
-#[cfg(target_family="ruspiro-pi3")]
-const PERIPHERAL_BASE: u32 = 0x3F00_0000;
-
-#[cfg(not(target_family="ruspiro-pi3"))]
-const PERIPHERAL_BASE: u32 = 0x2000_0000;
-
-/// Base address for GPIO MMIO registers
-const GPIO_BASE: u32 = PERIPHERAL_BASE + 0x0020_0000;
 
 /// Static "singleton" accessor to the GPIO peripheral
 pub static GPIO: Singleton<Gpio> = Singleton::<Gpio>::new(Gpio::new());
