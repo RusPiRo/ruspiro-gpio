@@ -4,7 +4,7 @@
  * Author: André Borrmann 
  * License: Appache License 2.0
  **********************************************************************************************************************/
-#![doc(html_root_url = "https://docs.rs/ruspiro-gpio/0.1.0")]
+#![doc(html_root_url = "https://docs.rs/ruspiro-gpio/0.2.1")]
 #![no_std]
 #![feature(asm)]
 //! # Raspberry Pi GPIO access abstraction
@@ -27,6 +27,9 @@
 //! }
 //! ```
 //! 
+//! # Features
+//! 
+//! - ``ruspiro_pi3`` is active by default and ensures the proper MMIO base memory address is used for Raspberry Pi 3
 
 use ruspiro_singleton::Singleton;
 
