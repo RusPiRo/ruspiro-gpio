@@ -15,7 +15,7 @@ different models the right address is choosen based on the given ``ruspiro_pi3``
 To use the crate just add the following dependency to your ``Cargo.toml`` file:
 ```
 [dependencies]
-ruspiro-gpio = "0.1.0"
+ruspiro-gpio = "0.2"
 ```
 
 Once done the access to the GPIO abstraction is available in your rust files like so:
