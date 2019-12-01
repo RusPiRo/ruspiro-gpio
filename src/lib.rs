@@ -36,6 +36,8 @@ use ruspiro_singleton::Singleton;
 pub mod pin;
 pub use self::pin::*;
 
+pub mod debug;
+
 /// Static "singleton" accessor to the GPIO peripheral
 pub static GPIO: Singleton<Gpio> = Singleton::<Gpio>::new(Gpio::new());
 
