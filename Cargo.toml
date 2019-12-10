@@ -13,6 +13,11 @@ keywords = ["RusPiRo", "gpio", "baremetal", "raspberrypi"]
 categories = ["no-std", "embedded"]
 edition = "2018"
 
+[badges]
+travis-ci = { repository = "RusPiRo/ruspiro-gpio", branch = "master" }
+maintenance = { status = "actively-developed" }
+
+
 [lib]
 
 [dependencies]
