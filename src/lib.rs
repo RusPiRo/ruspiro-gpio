@@ -4,7 +4,7 @@
  * Author: André Borrmann 
  * License: Appache License 2.0
  **********************************************************************************************************************/
-#![doc(html_root_url = "https://docs.rs/ruspiro-gpio/0.2.1")]
+#![doc(html_root_url = "https://docs.rs/ruspiro-gpio/0.3.0")]
 #![no_std]
 #![feature(asm)]
 //! # Raspberry Pi GPIO access abstraction
@@ -19,17 +19,18 @@
 //! ```
 //! use ruspiro_gpio::GPIO;
 //! 
-//! fn demo() {
+//! # fn main() {
 //!     GPIO.take_for(|gpio| {
 //!         let pin = gpio.get_pin(17).unwrap(); // assuming we can always get this pin as it is not in use already
 //!         pin.to_output().high(); // set this pin to high - this may lit a connected LED :)
 //!     });
-//! }
+//! # }
 //! ```
 //! 
 //! # Features
 //! 
 //! - ``ruspiro_pi3`` is active by default and ensures the proper MMIO base memory address is used for Raspberry Pi 3
+//! 
 
 use ruspiro_singleton::Singleton;
 
