@@ -9,7 +9,7 @@
 //! Implementation of a GPIO Pin and its functions. The purpose and current state of each pin is encapsulated with a
 //! zero-sizes-type generics argument to ensure compile time safety when using a pin that has specific requirements
 //! 
-use ruspiro_register::{define_registers, ReadWrite, WriteOnly, RegisterField};
+use ruspiro_register::{define_mmio_register, ReadWrite, WriteOnly, RegisterField};
 
 // MMIO peripheral base address based on the pi model we build for
 #[cfg(feature="ruspiro_pi3")]
@@ -237,22 +237,22 @@ impl<PUD> Pin<function::Output, PUD> {
 
 
 // Define the registers of the GPIO that are used to access the pin's
-define_registers! [
-    GPFSEL0: ReadWrite<u32> @ GPIO_BASE + 0x00,
-    GPFSEL1: ReadWrite<u32> @ GPIO_BASE + 0x04,
-    GPFSEL2: ReadWrite<u32> @ GPIO_BASE + 0x08,
-    GPFSEL3: ReadWrite<u32> @ GPIO_BASE + 0x0C,
-    GPFSEL4: ReadWrite<u32> @ GPIO_BASE + 0x10,
-    GPFSEL5: ReadWrite<u32> @ GPIO_BASE + 0x14,
-    GPSET0: WriteOnly<u32> @ GPIO_BASE + 0x1C,
-    GPSET1: WriteOnly<u32> @ GPIO_BASE + 0x20,
-    GPCLR0: WriteOnly<u32> @ GPIO_BASE + 0x28,
-    GPCLR1: WriteOnly<u32> @ GPIO_BASE + 0x2C,
-    GPPUD: ReadWrite<u32> @ GPIO_BASE + 0x94 => [
+define_mmio_register! [
+    GPFSEL0<ReadWrite<u32>@(GPIO_BASE + 0x00)>,
+    GPFSEL1<ReadWrite<u32>@(GPIO_BASE + 0x04)>,
+    GPFSEL2<ReadWrite<u32>@(GPIO_BASE + 0x08)>,
+    GPFSEL3<ReadWrite<u32>@(GPIO_BASE + 0x0C)>,
+    GPFSEL4<ReadWrite<u32>@(GPIO_BASE + 0x10)>,
+    GPFSEL5<ReadWrite<u32>@(GPIO_BASE + 0x14)>,
+    GPSET0<WriteOnly<u32>@(GPIO_BASE + 0x1C)>,
+    GPSET1<WriteOnly<u32>@(GPIO_BASE + 0x20)>,
+    GPCLR0<WriteOnly<u32>@(GPIO_BASE + 0x28)>,
+    GPCLR1<WriteOnly<u32>@(GPIO_BASE + 0x2C)>,
+    GPPUD<ReadWrite<u32>@(GPIO_BASE + 0x94)> {
         PUD OFFSET(0) BITS(2)
-    ],
-    GPPUDCLK0: ReadWrite<u32> @ GPIO_BASE + 0x98,
-    GPPUDCLK1: ReadWrite<u32> @ GPIO_BASE + 0x9C
+    },
+    GPPUDCLK0<ReadWrite<u32>@(GPIO_BASE + 0x98)>,
+    GPPUDCLK1<ReadWrite<u32>@(GPIO_BASE + 0x9C)>
 ];
 
 // GPIO pin function register config values
