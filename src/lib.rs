@@ -16,7 +16,7 @@
 //! # Usage
 //! 
 //! The crate provides a singleton accessor to the GPIO peripheral and it's pin to be used in a safe manner like this:
-//! ```
+//! ```no_run
 //! use ruspiro_gpio::GPIO;
 //! 
 //! # fn main() {
