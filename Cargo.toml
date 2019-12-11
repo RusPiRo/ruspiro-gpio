@@ -1,21 +1,28 @@
 [package]
 name = "ruspiro-gpio"
 authors = ["André Borrmann <pspwizard@gmx.de>"]
-version = "0.2.1" # remember to update html_root_url
-description = "This crates provides a GPIO peripheral abstraction of the Raspberry Pi"
+version = "0.3.0" # remember to update html_root_url
+description = """
+This crates provides a GPIO peripheral abstraction of the Raspberry Pi
+"""
 license = "Apache-2.0"
-repository = "https://github.com/RusPiRo/ruspiro-gpio"
-documentation = "https://docs.rs/ruspiro-gpio/0.2.1"
+repository = "https://github.com/RusPiRo/ruspiro-gpio/tree/v0.3.0"
+documentation = "https://docs.rs/ruspiro-gpio/0.3.0"
 readme = "README.md"
 keywords = ["RusPiRo", "gpio", "baremetal", "raspberrypi"]
 categories = ["no-std", "embedded"]
 edition = "2018"
 
+[badges]
+travis-ci = { repository = "RusPiRo/ruspiro-gpio", branch = "master" }
+maintenance = { status = "actively-developed" }
+
+
 [lib]
 
 [dependencies]
-ruspiro-singleton = "0.2"
-ruspiro-register = "0.1"
+ruspiro-singleton = { path = "../singleton", version = "0.3" }
+ruspiro-register = { path = "../register", version = "0.3" }
 
 [features]
 default = ["ruspiro_pi3"]
