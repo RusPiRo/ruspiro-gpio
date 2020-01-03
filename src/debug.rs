@@ -5,7 +5,7 @@
  * License: Apache License 2.0
  **********************************************************************************************************************/
 
-//! # Unsfafe GPIO access
+//! # Unsafe GPIO access
 //!
 //! Sometimes during development, when there is no console output possible or atomic operations
 //! are not yet usable due to missing MMU setup, it's helpful to verify system behaviour by

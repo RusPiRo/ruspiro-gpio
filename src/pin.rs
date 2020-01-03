@@ -9,14 +9,8 @@
 //! Implementation of a GPIO Pin and its functions. The purpose and current state of each pin is encapsulated with a
 //! zero-sizes-type generics argument to ensure compile time safety when using a pin that has specific requirements
 //!
-use ruspiro_register::{define_mmio_register, ReadWrite, RegisterField, WriteOnly};
-
-// MMIO peripheral base address based on the pi model we build for
-#[cfg(feature = "ruspiro_pi3")]
-const PERIPHERAL_BASE: u32 = 0x3F00_0000;
-
-/// Base address for GPIO MMIO registers
-const GPIO_BASE: u32 = PERIPHERAL_BASE + 0x0020_0000;
+use ruspiro_register::{ReadOnly, ReadWrite, RegisterField, WriteOnly};
+use crate::interface::*;
 
 /// Representation of a GPIO pin that can have specific features. Those features are described with generic arguments to
 /// define the pin e.g. as an output pin with disabled PullUp/Down.
@@ -53,11 +47,13 @@ pub(crate) mod pud {
 
 /// Functions available for any kind of pin
 impl<FUNC, PUD> Pin<FUNC, PUD> {
+    /// Create a new ``Pin`` with an unknown function and PUD settings.
+    #[allow(clippy::new_ret_no_self)]
     pub fn new(num: u32) -> Pin<function::Unknown, pud::Unknown> {
         let fsel_num = num / 10;
         let fsel_shift = (num % 10) * 3;
         Pin {
-            num: num,
+            num,
             config: PinConfig {
                 fsel: match fsel_num {
                     0 => GPFSEL0::Register,
@@ -79,6 +75,11 @@ impl<FUNC, PUD> Pin<FUNC, PUD> {
                 } else {
                     GPCLR1::Register
                 },
+                level: if num < 32 {
+                    GPLEV0::Register
+                } else {
+                    GPLEV1::Register
+                },
                 setclr_val: 1 << (num % 32),
                 pudclk: if num < 32 {
                     GPPUDCLK0::Register
@@ -93,7 +94,7 @@ impl<FUNC, PUD> Pin<FUNC, PUD> {
     }
 
     /// switch any pin into an input pin
-    pub fn to_input(self) -> Pin<function::Input, PUD> {
+    pub fn into_input(self) -> Pin<function::Input, PUD> {
         self.config
             .fsel
             .modify(self.config.fsel_field, Function::Input as u32);
@@ -106,7 +107,7 @@ impl<FUNC, PUD> Pin<FUNC, PUD> {
     }
 
     /// switch any pin into an output pin
-    pub fn to_output(self) -> Pin<function::Output, PUD> {
+    pub fn into_output(self) -> Pin<function::Output, PUD> {
         self.config
             .fsel
             .modify(self.config.fsel_field, Function::Output as u32);
@@ -118,8 +119,8 @@ impl<FUNC, PUD> Pin<FUNC, PUD> {
         }
     }
 
-    /// switch any pin into an pin with active alt function 0
-    pub fn to_alt_f0(self) -> Pin<function::AltFunc0, PUD> {
+    /// switch any pin into a pin with active alt function 0
+    pub fn into_alt_f0(self) -> Pin<function::AltFunc0, PUD> {
         self.config
             .fsel
             .modify(self.config.fsel_field, Function::Alt0 as u32);
@@ -131,8 +132,8 @@ impl<FUNC, PUD> Pin<FUNC, PUD> {
         }
     }
 
-    /// switch any pin into an pin with active alt function 0
-    pub fn to_alt_f1(self) -> Pin<function::AltFunc1, PUD> {
+    /// switch any pin into a pin with active alt function 0
+    pub fn into_alt_f1(self) -> Pin<function::AltFunc1, PUD> {
         self.config
             .fsel
             .modify(self.config.fsel_field, Function::Alt1 as u32);
@@ -144,8 +145,8 @@ impl<FUNC, PUD> Pin<FUNC, PUD> {
         }
     }
 
-    /// switch any pin into an pin with active alt function 0
-    pub fn to_alt_f2(self) -> Pin<function::AltFunc2, PUD> {
+    /// switch any pin into a pin with active alt function 0
+    pub fn into_alt_f2(self) -> Pin<function::AltFunc2, PUD> {
         self.config
             .fsel
             .modify(self.config.fsel_field, Function::Alt2 as u32);
@@ -157,8 +158,8 @@ impl<FUNC, PUD> Pin<FUNC, PUD> {
         }
     }
 
-    /// switch any pin into an pin with active alt function 0
-    pub fn to_alt_f3(self) -> Pin<function::AltFunc3, PUD> {
+    /// switch any pin into a pin with active alt function 0
+    pub fn into_alt_f3(self) -> Pin<function::AltFunc3, PUD> {
         self.config
             .fsel
             .modify(self.config.fsel_field, Function::Alt3 as u32);
@@ -170,8 +171,8 @@ impl<FUNC, PUD> Pin<FUNC, PUD> {
         }
     }
 
-    /// switch any pin into an pin with active alt function 0
-    pub fn to_alt_f4(self) -> Pin<function::AltFunc4, PUD> {
+    /// switch any pin into a pin with active alt function 0
+    pub fn into_alt_f4(self) -> Pin<function::AltFunc4, PUD> {
         self.config
             .fsel
             .modify(self.config.fsel_field, Function::Alt4 as u32);
@@ -183,8 +184,8 @@ impl<FUNC, PUD> Pin<FUNC, PUD> {
         }
     }
 
-    /// switch any pin into an pin with active alt function 0
-    pub fn to_alt_f5(self) -> Pin<function::AltFunc5, PUD> {
+    /// switch any pin into a pin with active alt function 0
+    pub fn into_alt_f5(self) -> Pin<function::AltFunc5, PUD> {
         self.config
             .fsel
             .modify(self.config.fsel_field, Function::Alt5 as u32);
@@ -197,7 +198,7 @@ impl<FUNC, PUD> Pin<FUNC, PUD> {
     }
 
     /// Disable PullUp/Down for the pin
-    pub fn to_pud_disabled(self) -> Pin<FUNC, pud::Disabled> {
+    pub fn into_pud_disabled(self) -> Pin<FUNC, pud::Disabled> {
         self.set_pud(Pud::Disabled);
 
         Pin {
@@ -209,7 +210,7 @@ impl<FUNC, PUD> Pin<FUNC, PUD> {
     }
 
     /// Enable PullUp for the pin
-    pub fn to_pud_up(self) -> Pin<FUNC, pud::PullUp> {
+    pub fn into_pud_up(self) -> Pin<FUNC, pud::PullUp> {
         self.set_pud(Pud::PullUp);
 
         Pin {
@@ -221,7 +222,7 @@ impl<FUNC, PUD> Pin<FUNC, PUD> {
     }
 
     /// Enable PullDown for the pin
-    pub fn to_pud_down(self) -> Pin<FUNC, pud::PullDown> {
+    pub fn into_pud_down(self) -> Pin<FUNC, pud::PullDown> {
         self.set_pud(Pud::PullDown);
 
         Pin {
@@ -264,55 +265,25 @@ impl<PUD> Pin<function::Output, PUD> {
         // write the pin bit to the clear register to set the pin to low
         self.config.clear.set(self.config.setclr_val);
     }
-}
 
-// Define the registers of the GPIO that are used to access the pin's
-define_mmio_register! [
-    GPFSEL0<ReadWrite<u32>@(GPIO_BASE + 0x00)>,
-    GPFSEL1<ReadWrite<u32>@(GPIO_BASE + 0x04)>,
-    GPFSEL2<ReadWrite<u32>@(GPIO_BASE + 0x08)>,
-    GPFSEL3<ReadWrite<u32>@(GPIO_BASE + 0x0C)>,
-    GPFSEL4<ReadWrite<u32>@(GPIO_BASE + 0x10)>,
-    GPFSEL5<ReadWrite<u32>@(GPIO_BASE + 0x14)>,
-    GPSET0<WriteOnly<u32>@(GPIO_BASE + 0x1C)>,
-    GPSET1<WriteOnly<u32>@(GPIO_BASE + 0x20)>,
-    GPCLR0<WriteOnly<u32>@(GPIO_BASE + 0x28)>,
-    GPCLR1<WriteOnly<u32>@(GPIO_BASE + 0x2C)>,
-    GPPUD<ReadWrite<u32>@(GPIO_BASE + 0x94)> {
-        PUD OFFSET(0) BITS(2)
-    },
-    GPPUDCLK0<ReadWrite<u32>@(GPIO_BASE + 0x98)>,
-    GPPUDCLK1<ReadWrite<u32>@(GPIO_BASE + 0x9C)>
-];
-
-// GPIO pin function register config values
-#[repr(u32)]
-enum Function {
-    Input = 0b000,
-    Output = 0b001,
-    Alt0 = 0b100,
-    Alt1 = 0b101,
-    Alt2 = 0b110,
-    Alt3 = 0b111,
-    Alt4 = 0b011,
-    Alt5 = 0b010,
-}
-
-// GPIO pull up/down register config values
-#[repr(u8)]
-enum Pud {
-    Disabled = 0b00,
-    PullDown = 0b01,
-    PullUp = 0b10,
+    pub fn toggle(&self) {
+        // get the current level of the pin and toggle it's state
+        if (self.config.level.get() & self.config.setclr_val) == 0 {
+            self.high();
+        } else {
+            self.low();
+        }
+    }
 }
 
 #[derive(Clone)]
 struct PinConfig {
-    pub fsel: ReadWrite<u32>,
-    pub fsel_field: RegisterField<u32>,
-    pub set: WriteOnly<u32>,
-    pub clear: WriteOnly<u32>,
-    pub setclr_val: u32,
-    pub pudclk: ReadWrite<u32>,
-    pub pud_val: u32,
+    pub(crate) fsel: ReadWrite<u32>,
+    pub(crate) fsel_field: RegisterField<u32>,
+    pub(crate) set: WriteOnly<u32>,
+    pub(crate) clear: WriteOnly<u32>,
+    pub(crate) level: ReadOnly<u32>,
+    pub(crate) setclr_val: u32,
+    pub(crate) pudclk: ReadWrite<u32>,
+    pub(crate) pud_val: u32,
 }

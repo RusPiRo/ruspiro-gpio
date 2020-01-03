@@ -1,36 +1,51 @@
 #!/bin/sh
-
+#*********************************************************************************
+# script to build the crate for aarch32 or aarch64 based on the parameter given
+#*********************************************************************************
 set +ev
 
 if [ $# -eq 0 ] 
     then 
-        echo "not enough parameter given"
+        echo "provide the target architecture to build for - 32 or 64"
         exit 1
 fi
 
-# check which aarch version to build
 if [ $1 = "64" ]
     then
         # aarch64
-        export CFLAGS='-march=armv8-a -Wall -O3 -nostdlib -nostartfiles -ffreestanding -mtune=cortex-a53'
-        export RUSTFLAGS='-C linker=aarch64-elf-gcc -C target-cpu=cortex-a53 -C target-feature=+strict-align,+a53,+fp-armv8,+neon -C link-arg=-nostartfiles -C opt-level=3 -C debuginfo=0'
-        if [ "$2" = "" ]
+        # use the right compiler toolchain prefix when building on travis
+        if [ -z "$2" ]
             then
-                export CC='aarch64-elf-gcc'
-                export AR='aarch64-elf-ar'
+                PREFIX=aarch64-elf-
+            else
+                PREFIX=aarch64-linux-gnu-
         fi
-        cargo xbuild --target aarch64-unknown-linux-gnu --release
+        CFLAGS="-march=armv8-a -Wall -O3 -nostdlib -nostartfiles -ffreestanding -mtune=cortex-a53"
+        RUSTFLAGS="-C linker=${PREFIX}gcc -C target-cpu=cortex-a53 -C target-feature=+strict-align,+a53,+fp-armv8,+neon -C link-arg=-nostartfiles -C opt-level=3 -C debuginfo=0"
+        TARGET="aarch64-unknown-linux-gnu"
 elif [ $1 = "32" ]
     then
         # aarch32
-        export CFLAGS='-mfpu=neon-fp-armv8 -mfloat-abi=hard -march=armv8-a -Wall -O3 -nostdlib -nostartfiles -ffreestanding -mtune=cortex-a53'
-        export RUSTFLAGS='-C linker=arm-eabi-gcc.exe -C target-cpu=cortex-a53 -C target-feature=+strict-align,+a53,+fp-armv8,+v8,+vfp3,+d16,+thumb2,+neon -C link-arg=-nostartfiles -C opt-level=3 -C debuginfo=0'
+        # use the right compiler toolchain prefix when building on travis
         if [ -z "$2" ]
             then
-                export CC='arm-eabi-gcc.exe'
-                export AR='arm-eabi-ar.exe'
+                PREFIX=arm-eabi-
+            else
+                PREFIX=arm-linux-gnueabihf-
         fi
-        cargo xbuild --target armv7-unknown-linux-gnueabihf --release
+        CFLAGS="-mfpu=neon-fp-armv8 -mfloat-abi=hard -march=armv8-a -Wall -O3 -nostdlib -nostartfiles -ffreestanding -mtune=cortex-a53"
+        RUSTFLAGS="-C linker=${PREFIX}gcc -C target-cpu=cortex-a53 -C target-feature=+strict-align,+a53,+fp-armv8,+v8,+vfp3,+d16,+thumb2,+neon -C link-arg=-nostartfiles -C opt-level=3 -C debuginfo=0"
+        TARGET="armv7-unknown-linux-gnueabihf"
 else
-    echo 'provide the archtitecture to be build. Use either "build.sh 32" or "build.sh 64"'
+    echo 'provide the archtitecture to be build. Use either "build.sh 32" or "build.sh 64" followed by "deploy" if you like to deploy to the device'
+    exit 1
 fi
+
+export CFLAGS="${CFLAGS}"
+export RUSTFLAGS="${RUSTFLAGS}"
+export CC="${PREFIX}gcc"
+export AR="${PREFIX}ar"
+export TARGET="${TARGET}"
+export KERNEL="${KERNEL}"
+
+cargo xbuild --target ${TARGET} --release --features ruspiro_pi3
