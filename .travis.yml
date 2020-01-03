@@ -33,4 +33,7 @@ matrix:
       script: sed -i 's/path.*=.*\".*", version/version/g' Cargo.toml && ./build.sh 32 travis
 
     - name: "unit tests"
-      script: sed -i 's/path.*=.*\".*", version/version/g' Cargo.toml && cargo test --tests
+      script: sed -i 's/path.*=.*\".*", version/version/g' Cargo.toml && cargo test --tests --features ruspiro_pi3
+
+    - name: "doc tests"
+      script: sed -i 's/path.*=.*\".*", version/version/g' Cargo.toml && cargo test --doc --features ruspiro_pi3
