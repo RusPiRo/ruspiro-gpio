@@ -8,12 +8,15 @@
 //! # Gpio low level functions
 //!
 
-use crate::GpioEvent;
+use crate::hal::GpioEvent;
 use ruspiro_register::*;
 
 // MMIO peripheral base address based on the pi model we build for
-#[cfg(feature = "ruspiro_pi3")]
+#[cfg(any(feature = "ruspiro_pi2", feature = "ruspiro_pi3"))]
 const PERIPHERAL_BASE: u32 = 0x3F00_0000;
+
+#[cfg(feature = "ruspiro_pi4")]
+const PERIPHERAL_BASE: u32 = 0xFE00_0000;
 
 /// Base address for GPIO MMIO registers
 const GPIO_BASE: u32 = PERIPHERAL_BASE + 0x0020_0000;

@@ -4,38 +4,145 @@
  * Author: André Borrmann
  * License: Appache License 2.0
  **********************************************************************************************************************/
-#![doc(html_root_url = "https://docs.rs/ruspiro-gpio/0.4.0")]
+#![doc(html_root_url = "https://docs.rs/ruspiro-gpio/0.5.0")]
 #![cfg_attr(not(any(test, doctest)), no_std)]
 #![feature(asm, const_fn, const_in_array_repeat_expressions)]
-//! # Raspberry Pi GPIO access abstraction
+//! # GPIO implementation for Raspberry Pi
 //!
-//! This crate provide as simple to use and safe abstraction of the GPIO's available on the Raspberry Pi 3. The GPIO
-//! configuration requires access to MMIO registers with a specific memory base address. As this might differ between
-//! different models the right address is choosen based on the given ``ruspiro_pi3`` feature while compiling.
-//!
+//! This crates implements the GPIO HAL for the Raspberry Pi and thus provides access to the same on this hardware.
+//! While this implementation ensures with an [AtomicBool] as gate keeper that there will be only one instance of the 
+//! [GpioRpi] existing it is the responsibility of the crate user to ensure wrapping of the instance into a proper and
+//! safe type to enable cross thread and cross core access to the peripheral. A valid approach would be to wrap it into 
+//! a [Singleton](https://https://docs.rs/ruspiro-singleton) and if necessary wrap this further into an [Arc].
+//! 
 //! # Usage
 //!
-//! The crate provides a singleton accessor to the GPIO peripheral and it's pin to be used in a safe manner like this:
 //! ```no_run
-//! use ruspiro_gpio::GPIO;
+//! use ruspiro_gpio::*;
 //!
 //! fn doc() {
-//!     GPIO.take_for(|gpio| {
-//!         let pin = gpio.get_pin(17).unwrap(); // assuming we can always get this pin as it is not in use already
-//!         pin.into_output().high(); // set this pin to high - this may lit a connected LED :)
-//!     });
+//!     let gpio = Gpio::new().unwrap();
+//! 
+//!     let pin = gpio.use_pin(17).unwrap(); // assuming we can always get this pin as it is not in use already
+//!     pin.into_output().high(); // set this pin to high - this may lit a connected LED :)
 //! }
 //! ```
 //!
 //! # Features
 //!
-//! - ``ruspiro_pi3`` Ensures the proper MMIO base memory address is used for Raspberry Pi 3
+//! - ``ruspiro_pi2`` Ensures the proper MMIO base memory address is used for Raspberry Pi 2, 2B
+//! - ``ruspiro_pi3`` Ensures the proper MMIO base memory address is used for Raspberry Pi 3, 3B+
+//! - ``ruspiro_pi4`` Ensures the proper MMIO base memory address is used for Raspberry Pi 3, 3B+
 //!
+
+/// re-export the HAL trait definitions as they need to be in scope when using the specific
+/// Gpio implementation
+pub use ruspiro_gpio_hal as hal;
+
+extern crate alloc;
+use alloc::{boxed::Box, format};
+use ruspiro_error::*;
+use core::sync::atomic::{AtomicBool, Ordering};
+
+mod pin;
+mod interface;
+
+/// this atomic bool gates the instantiation of the Gpio to happen only once
+static GPIO_ONCE: AtomicBool = AtomicBool::new(false);
+
+/// The Raspberry Pi representation of the GPIO peripheral device
+pub struct GpioRpi {
+    /// for the sake of simplicity we only track which of the max. 40 pins of the Raspberry Pi are already in use
+    used_pins: [bool; 54],
+}
+
+impl GpioRpi {
+    /// Get a new instance of the Gpio peripheral representation. This should be called only once as it assumes no
+    /// [GpioPin] is in use. If this has been called already, it returns an [Err].
+    pub fn new() -> Result<Self, ()> {
+        if !GPIO_ONCE.compare_and_swap(false, true, Ordering::SeqCst) {
+            Ok(Self {
+                used_pins: [false; 54],
+            })
+        } else {
+            Err(())
+        }
+    }
+}
+
+/// If the actual Gpio instance used is dropped we would be allowed to create another one
+/// so stor this fact inside the atomic bool 
+impl Drop for GpioRpi {
+    fn drop(&mut self) {
+        GPIO_ONCE.store(false, Ordering::SeqCst);
+    }
+}
+
+impl hal::Gpio for GpioRpi {
+    fn use_pin(&mut self, id: u32) -> Result<Box<dyn hal::GpioPin>, BoxError> {
+        if id > 53 {
+            return Err(
+                GenericError::with_message("Raspberry Pi supports only up to 54 GPIO Pins")
+                    .into()
+            );
+        }
+        
+        if self.used_pins[id as usize] {
+            Err(
+                GenericError::with_message(
+                    format!("Pin {} already in use", id).as_str()
+                ).into()
+            )
+        } else {
+            Ok(Box::new(pin::GpioPin::new(id)))
+        }
+    }
+
+    fn release_pin(&mut self, id: u32) -> Result<(), BoxError> {
+        if id > 53 {
+            return Err(
+                GenericError::with_message("Raspberry Pi supports only up to 54 GPIO Pins")
+                    .into()
+            );
+        }
+        
+        if !self.used_pins[id as usize] {
+            Err(
+                GenericError::with_message(
+                    format!("Pin {} was not in use", id).as_str()
+                ).into()
+            )
+        } else {
+            Ok(())
+        }
+    }
+
+    fn register_event_handler_always(
+        &mut self,
+        gpio_pin: &dyn hal::GpioPinInput,
+        event: hal::GpioEvent,
+        handler: Box<dyn FnMut() + 'static + Send>,
+    ) {
+    }
+
+    fn register_event_handler_onetime(
+        &mut self,
+        gpio_pin: &dyn hal::GpioPinInput,
+        event: hal::GpioEvent,
+        handler: Box<dyn FnOnce() + 'static + Send>,
+    ) {
+    }
+
+    fn unregister_event_handler(&mut self, gpio_pin: &dyn hal::GpioPin, event: hal::GpioEvent) {}
+}
+
+/*
 
 extern crate alloc;
 use alloc::boxed::Box;
 use ruspiro_interrupt::*;
 use ruspiro_singleton::Singleton;
+use ruspiro_core::*;
 
 mod interface;
 use interface::*;
@@ -52,6 +159,8 @@ pub static GPIO: Singleton<Gpio> = Singleton::<Gpio>::new(Gpio::new());
 pub struct Gpio {
     used_pins: [bool; 40],
 }
+
+impl ruspiro_talents::capability::Capability for Gpio {}
 
 impl Gpio {
     /// Get a new intance of the GPIO peripheral and do some initialization to ensure a valid state of all
@@ -357,3 +466,5 @@ fn handle_gpio_bank1() {
         pin += 1;
     }
 }
+
+*/

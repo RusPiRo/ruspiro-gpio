@@ -3,11 +3,11 @@ name = "ruspiro-gpio"
 authors = ["André Borrmann <pspwizard@gmx.de>"]
 version = "0.4.0" # remember to update html_root_url
 description = """
-This crates provides a GPIO peripheral abstraction of the Raspberry Pi
+This crates provides access to the GPIO peripheral of the Raspberry Pi
 """
 license = "Apache-2.0"
-repository = "https://github.com/RusPiRo/ruspiro-gpio/tree/v0.4.0"
-documentation = "https://docs.rs/ruspiro-gpio/0.4.0"
+repository = "https://github.com/RusPiRo/ruspiro-gpio/tree/v0.5.0"
+documentation = "https://docs.rs/ruspiro-gpio/0.5.0"
 readme = "README.md"
 keywords = ["RusPiRo", "gpio", "baremetal", "raspberrypi"]
 categories = ["no-std", "embedded"]
@@ -20,11 +20,18 @@ maintenance = { status = "actively-developed" }
 [lib]
 
 [dependencies]
-ruspiro-singleton = { path = "../singleton", version = "0.3" }
-ruspiro-register = { path = "../register", version = "0.4" }
-ruspiro-interrupt = { path = "../interrupt", version = "0.3" }
+ruspiro-gpio-hal = { path = "../gpio-hal" }
+ruspiro-register = "0.4"
+ruspiro-interrupt = "0.3"
+ruspiro-error = { path = "../error", version = "0.1" }
 
 [features]
+ruspito_pi2 = [
+    "ruspiro-interrupt/ruspiro_pi2"
+]
 ruspiro_pi3 = [
     "ruspiro-interrupt/ruspiro_pi3"
+]
+ruspito_pi4 = [
+    "ruspiro-interrupt/ruspiro_pi4"
 ]
