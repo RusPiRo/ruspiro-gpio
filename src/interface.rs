@@ -8,7 +8,7 @@
 //! # Gpio low level functions
 //!
 
-use crate::hal::GpioEvent;
+use ruspiro_gpio_hal::GpioEvent;
 use ruspiro_register::*;
 
 // MMIO peripheral base address based on the pi model we build for
