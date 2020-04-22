@@ -83,7 +83,7 @@ impl HalGpioPin for GpioPin {
     /// re-configure the [GpioPin] as an Input pin. This is a stateful operation at the hardware layer
     /// so even if the [GpioPin] get's out of scope this setting remains valid
     /// TODO: verify if this is a valid/desired appraoch
-    fn into_input(self) -> Box<dyn HalGpioPinInput> {
+    fn into_input(self: Box<Self>) -> Box<dyn HalGpioPinInput> {
         // configure a GpioPin as input requires to configure it's FSEL register
         // accoringly
         self.config
@@ -96,7 +96,7 @@ impl HalGpioPin for GpioPin {
     /// re-configure the [GpioPin] as an Output pin. This is a stateful operation at the hardware layer
     /// so even if the [GpioPin] get's out of scope this setting remains valid
     /// TODO: verify if this is a valid/desired appraoch
-    fn into_output(self) -> Box<dyn HalGpioPinOutput> {
+    fn into_output(self: Box<Self>) -> Box<dyn HalGpioPinOutput> {
         // configure a GpioPin as input requires to configure it's FSEL register
         // accoringly
         self.config
