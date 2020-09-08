@@ -239,13 +239,13 @@ impl<FUNC, PUD> Pin<FUNC, PUD> {
         GPPUD::Register.modify(GPPUD::PUD, pud as u32);
         // 2. wait 150 cycles
         for _ in 0..150 {
-            unsafe { asm!("NOP") }
+            unsafe { llvm_asm!("NOP") }
         }
         // 3. write the pin to upate into the PUDCLCK register
         self.config.pudclk.set(self.config.pud_val);
         // 4. wait 150 cycles to settle the new settings
         for _ in 0..150 {
-            unsafe { asm!("NOP") }
+            unsafe { llvm_asm!("NOP") }
         }
         // 5. clear the pud control value in the PUD control register
         GPPUD::Register.set(0x0);
