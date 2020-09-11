@@ -15,25 +15,39 @@ matrix:
   include:
     - name: "build 64Bit"
       install:
-        - sudo apt-get install gcc-aarch64-linux-gnu gcc-aarch64-linux-gnu
+        - sudo apt-get install gcc-aarch64-linux-gnu
         - cargo install cargo-xbuild
+        - cargo install cargo-make 
         - rustup target add aarch64-unknown-linux-gnu
         - rustup component add rust-src
-        - sudo chmod ugo+x build.sh
-      script: sed -i 's/path.*=.*\".*", version/version/g' Cargo.toml && ./build.sh 64 travis
+        - rustup component add llvm-tools-preview
+        # if we not build a PR we remove the patch of the dependencies to their github repo's
+        - 'if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then sed -i "/{^\[patch\.crates-io\] /{:a;N;/\Z}/!ba};/^ruspiro-.*\(git\|path\).*/d" Cargo.toml; fi'
+      script: cargo make --profile a64-travis pi3
 
     - name: "build 32Bit"
       install:
-        - sudo apt-get install gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf
+        - sudo apt-get install gcc-arm-linux-gnueabihf
         - cargo install cargo-xbuild
+        - cargo install cargo-make 
         - rustup target add armv7-unknown-linux-gnueabihf
         - rustup component add rust-src
-        - sudo chmod ugo+x build.sh
-      # remove the path in the dependencies of the cargo file to ensure we use the version from crates.io
-      script: sed -i 's/path.*=.*\".*", version/version/g' Cargo.toml && ./build.sh 32 travis
+        - rustup component add llvm-tools-preview
+        # if we not build a PR we remove the patch of the dependencies to their github repo's
+        - 'if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then sed -i "/{^\[patch\.crates-io\] /{:a;N;/\Z}/!ba};/^ruspiro-.*\(git\|path\).*/d" Cargo.toml; fi'
+      script: cargo make --profile a32 pi3
 
     - name: "unit tests"
-      script: sed -i 's/path.*=.*\".*", version/version/g' Cargo.toml && cargo test --tests --features ruspiro_pi3
+      install:
+        # if we not build a PR we remove the patch of the dependencies to their github repo's
+        - 'if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then sed -i "/{^\[patch\.crates-io\] /{:a;N;/\Z}/!ba};/^ruspiro-.*\(git\|path\).*/d" Cargo.toml; fi'
+      script: cargo test --tests --features ruspiro_pi3
 
     - name: "doc tests"
-      script: sed -i 's/path.*=.*\".*", version/version/g' Cargo.toml && cargo test --doc --features ruspiro_pi3
+      install:
+        # if we not build a PR we remove the patch of the dependencies to their github repo's
+        - 'if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then sed -i "/{^\[patch\.crates-io\] /{:a;N;/\Z}/!ba};/^ruspiro-.*\(git\|path\).*/d" Cargo.toml; fi'
+        - cat Cargo.toml
+      script: cargo test --doc --features ruspiro_pi3
+
+      
