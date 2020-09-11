@@ -4,9 +4,9 @@
  * Author: André Borrmann
  * License: Appache License 2.0
  **********************************************************************************************************************/
-#![doc(html_root_url = "https://docs.rs/ruspiro-gpio/0.4.0")]
+#![doc(html_root_url = "https://docs.rs/ruspiro-gpio/0.4.1")]
 #![cfg_attr(not(any(test, doctest)), no_std)]
-#![feature(asm, const_fn, const_in_array_repeat_expressions)]
+#![feature(llvm_asm, const_fn, const_in_array_repeat_expressions)]
 //! # Raspberry Pi GPIO access abstraction
 //!
 //! This crate provide as simple to use and safe abstraction of the GPIO's available on the Raspberry Pi 3. The GPIO
