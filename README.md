@@ -1,25 +1,24 @@
 # RusPiRo GPIO access abstraction for Raspberry Pi
 
-This crate provide as simple to use and safe abstraction of the GPIO's available on the Raspberry Pi 3. The GPIO 
-configuration requires access to MMIO registers with a specific memory base address. As this might differ between
-different models the right address is choosen based on the given ``ruspiro_pi3`` feature while compiling.
+This crate provide as simple to use and safe abstraction of the GPIO's available on the Raspberry Pi 3. The GPIO configuration requires access to MMIO registers with a specific memory base address. As this might differ between different models the right address is choosen based on the given ``ruspiro_pi3`` feature while compiling.
 
 [![Travis-CI Status](https://api.travis-ci.org/RusPiRo/ruspiro-gpio.svg?branch=master)](https://travis-ci.org/RusPiRo/ruspiro-gpio)
 [![Latest Version](https://img.shields.io/crates/v/ruspiro-gpio.svg)](https://crates.io/crates/ruspiro-gpio)
 [![Documentation](https://docs.rs/ruspiro-gpio/badge.svg)](https://docs.rs/ruspiro-gpio)
 [![License](https://img.shields.io/crates/l/ruspiro-gpio.svg)](https://github.com/RusPiRo/ruspiro-gpio#license)
 
-
 ## Usage
 
 To use the crate just add the following dependency to your ``Cargo.toml`` file:
-```
+
+```toml
 [dependencies]
-ruspiro-gpio = "0.3"
+ruspiro-gpio = "0.4"
 ```
 
 Once done the access to the GPIO abstraction is available in your rust files like so:
-```
+
+```rust
 use ruspiro_gpio::GPIO;
 
 fn demo() {
@@ -37,6 +36,6 @@ fn demo() {
 }
 ```
 
-
 ## License
-Licensed under Apache License, Version 2.0, ([LICENSE](LICENSE) or http://www.apache.org/licenses/LICENSE-2.0)
+
+Licensed under Apache License, Version 2.0, ([LICENSE](LICENSE) or [http://www.apache.org/licenses/LICENSE-2.0](http://www.apache.org/licenses/LICENSE-2.0))

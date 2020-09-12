@@ -3,6 +3,7 @@
   - ### :detective: Fixes
     - remove `asm!` macro usages and replace with `llvm_asm!`
     - use `cargo make` to stabilize cross-platform builds
+
 ## :pizza: v0.4.0
   - ### :bulb: Features
     - New function to ``toggle`` an ``Output`` ``Pin`` between high and low.
