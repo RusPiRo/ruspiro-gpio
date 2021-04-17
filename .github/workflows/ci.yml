@@ -1,0 +1,47 @@
+name: CI
+
+on:
+  pull_request:
+    branches:
+      - development
+      - release
+
+  push:
+    branches:
+      - development
+      - release
+
+jobs:
+  build:
+    name: Compile The Crate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Chechout Code
+        uses: actions/checkout@v2
+
+      - name: Install aarch64 gcc toolchain
+        run: sudo apt-get install -y gcc-aarch64-linux-gnu
+
+      - name: Install Rust nightly and cargo
+        uses: actions-rs/toolchain@v1
+        with:
+          version: 'latest'
+          profile: minimal
+          toolchain: nightly
+          override: true
+          components: rustfmt, clippy, rust-src, llvm-tools-preview
+          target: aarch64-unknown-none
+
+      - name: Install cargo-make
+        uses: davidB/rust-cargo-make@v1
+        with:
+          version: 'latest'
+
+      - if: ${{ github.event_name != 'pull_request' }}
+        name: Remove patches from Cargo.toml
+        run: |
+          sed -i "/{^\[patch\.crates-io\] /{:a;N;/\Z}/!ba};/^ruspiro-.*\(git\|path\).*/d" Cargo.toml;
+          cat Cargo.toml
+
+      - name: Compile
+        run: cargo make pi3 --profile pipeline

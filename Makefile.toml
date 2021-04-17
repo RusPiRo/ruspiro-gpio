@@ -17,14 +17,13 @@ CFLAGS = "-mcpu=cortex-a53 -march=armv7-a -mfpu=neon -mfloat-abi=softfp -Wall -O
 RUSTFLAGS = "-C linker=${CC} -C target-cpu=cortex-a53 -C link-arg=-nostartfiles"
 BUILD_TARGET = "armv7a-none-eabi"
 
-# Travis CI need a different CC/AR alltogether as the aarch64-none-elf is not available there as it seems
-[env.a64-travis]
+# CI Pipeline build settings
+[env.pipeline]
 CC = "aarch64-linux-gnu-gcc"
 AR = "aarch64-linux-gnu-ar"
-OC = "aarch64-linux-gnu-objcopy"
 CFLAGS = "-march=armv8-a -Wall -O3 -nostdlib -nostartfiles -ffreestanding -mtune=cortex-a53"
-RUSTFLAGS = "-C linker=${CC} -C target-cpu=cortex-a53 -C link-arg=-nostartfiles"
-BUILD_TARGET = "aarch64-unknown-linux-gnu"
+RUSTFLAGS = "-C target-cpu=cortex-a53 -C target-feature=+strict-align,+a53,+fp-armv8,+neon -C link-arg=-T./link64.ld"
+
 
 [tasks.xbuild]
 command = "cargo"

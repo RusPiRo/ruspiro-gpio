@@ -1,4 +1,12 @@
 # Changelog
+
+## :beaches: v0.4.2
+
+- ### :wrench: Maintenance
+
+  - move pipeline build to github actions
+  - ensure proper compilation with latest nightly version (1.53.0) of rust
+
 ## :banana: v0.4.1
   - ### :detective: Fixes
     - remove `asm!` macro usages and replace with `llvm_asm!`

@@ -9,14 +9,14 @@
 //!
 
 use crate::GpioEvent;
-use ruspiro_register::*;
+use ruspiro_mmio_register::*;
 
 // MMIO peripheral base address based on the pi model we build for
-#[cfg(feature = "ruspiro_pi3")]
-const PERIPHERAL_BASE: u32 = 0x3F00_0000;
+#[cfg(any(feature = "ruspiro_pi3", feature = "ruspiro_pi3_test"))]
+const PERIPHERAL_BASE: usize = 0x3F00_0000;
 
 /// Base address for GPIO MMIO registers
-const GPIO_BASE: u32 = PERIPHERAL_BASE + 0x0020_0000;
+const GPIO_BASE: usize = PERIPHERAL_BASE + 0x0020_0000;
 
 /// The two existing GPIO banks
 pub(crate) enum GpioBank {

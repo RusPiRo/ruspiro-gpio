@@ -9,7 +9,7 @@
 //! Implementation of a GPIO Pin and its functions. The purpose and current state of each pin is encapsulated with a
 //! zero-sizes-type generics argument to ensure compile time safety when using a pin that has specific requirements
 //!
-use ruspiro_register::{ReadOnly, ReadWrite, RegisterField, WriteOnly};
+use ruspiro_mmio_register::{ReadOnly, ReadWrite, RegisterField, WriteOnly};
 use crate::interface::*;
 
 /// Representation of a GPIO pin that can have specific features. Those features are described with generic arguments to

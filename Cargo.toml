@@ -1,13 +1,13 @@
 [package]
 name = "ruspiro-gpio"
 authors = ["André Borrmann <pspwizard@gmx.de>"]
-version = "0.4.1" # remember to update html_root_url
+version = "0.4.2" # remember to update html_root_url
 description = """
 This crates provides a GPIO peripheral abstraction of the Raspberry Pi
 """
 license = "Apache-2.0"
-repository = "https://github.com/RusPiRo/ruspiro-gpio/tree/v0.4.1"
-documentation = "https://docs.rs/ruspiro-gpio/0.4.1"
+repository = "https://github.com/RusPiRo/ruspiro-gpio/tree/v||VERSION||"
+documentation = "https://docs.rs/ruspiro-gpio/||VERSION||"
 readme = "README.md"
 keywords = ["RusPiRo", "gpio", "baremetal", "raspberrypi"]
 categories = ["no-std", "embedded"]
@@ -21,16 +21,18 @@ maintenance = { status = "actively-developed" }
 [lib]
 
 [dependencies]
-ruspiro-singleton = "0.3"
-ruspiro-register = "0.4"
-ruspiro-interrupt = "0.3"
+ruspiro-singleton = "~0.4"
+ruspiro-mmio-register = "~0.1"
+ruspiro-interrupt = { version = "~0.3", optional = true }
 
 [features]
 ruspiro_pi3 = [
     "ruspiro-interrupt/ruspiro_pi3"
 ]
+# feature indicating we will be compiled for the testframework
+ruspiro_pi3_test = []
 
 [patch.crates-io]
-ruspiro-singleton = { git = "https://github.com/RusPiRo/ruspiro-singleton.git" }
-ruspiro-register = { git = "https://github.com/RusPiRo/ruspiro-register.git" }
-ruspiro-interrupt = { git = "https://github.com/RusPiRo/ruspiro-interrupt.git" }
+#ruspiro-singleton = { git = "https://github.com/RusPiRo/ruspiro-singleton.git" }
+#ruspiro-register = { git = "https://github.com/RusPiRo/ruspiro-register.git" }
+#ruspiro-interrupt = { git = "https://github.com/RusPiRo/ruspiro-interrupt.git" }

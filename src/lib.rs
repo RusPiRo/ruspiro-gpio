@@ -4,9 +4,9 @@
  * Author: André Borrmann
  * License: Appache License 2.0
  **********************************************************************************************************************/
-#![doc(html_root_url = "https://docs.rs/ruspiro-gpio/0.4.1")]
+#![doc(html_root_url = "https://docs.rs/ruspiro-gpio/||VERSION||")]
 #![cfg_attr(not(any(test, doctest)), no_std)]
-#![feature(llvm_asm, const_fn, const_in_array_repeat_expressions)]
+#![feature(llvm_asm, const_fn)]
 //! # Raspberry Pi GPIO access abstraction
 //!
 //! This crate provide as simple to use and safe abstraction of the GPIO's available on the Raspberry Pi 3. The GPIO
@@ -34,6 +34,8 @@
 
 extern crate alloc;
 use alloc::boxed::Box;
+// when compiling for the testframework interrupts are not enabled for the GPIO
+#[cfg(not(feature = "ruspiro_pi3_test"))]
 use ruspiro_interrupt::*;
 use ruspiro_singleton::Singleton;
 
@@ -122,6 +124,7 @@ impl Gpio {
     /// });
     /// # }
     /// ```
+    #[cfg(not(feature = "ruspiro_pi3_test"))]
     pub fn register_recurring_event_handler<F: FnMut() + 'static + Send, PUD>(
         &mut self,
         pin: &Pin<function::Input, PUD>,
@@ -179,6 +182,7 @@ impl Gpio {
     /// });
     /// # }
     /// ```
+    #[cfg(not(feature = "ruspiro_pi3_test"))]
     pub fn register_oneshot_event_handler<F: FnOnce() + 'static + Send, PUD>(
         &mut self,
         pin: &Pin<function::Input, PUD>,
@@ -229,6 +233,7 @@ impl Gpio {
     /// });
     /// # }
     /// ```
+    #[cfg(not(feature = "testframework"))]
     pub fn remove_event_handler<PUD>(&mut self, pin: &Pin<function::Input, PUD>) {
         let slot = (pin.num & 31) as usize;
         let bank = pin.num / 32;
@@ -293,20 +298,39 @@ impl core::fmt::Debug for GpioError {
 }
 
 /// recurring/multi call interrupt handler for GPIO 0-31 at bank 0
-static mut BANK0_HANDLER_MC: [Option<Box<dyn FnMut() + 'static + Send>>; 32] = [None; 32];
+static mut BANK0_HANDLER_MC: [Option<Box<dyn FnMut() + 'static + Send>>; 32] = [
+    None, None, None, None, None, None, None, None, None, None,
+    None, None, None, None, None, None, None, None, None, None,
+    None, None, None, None, None, None, None, None, None, None,
+    None, None,
+];
 /// oneshot/single call interrupt handler for GPIO 0-31 at bank 0
-static mut BANK0_HANDLER_SC: [Option<Box<dyn FnOnce() + 'static + Send>>; 32] = [None; 32];
+static mut BANK0_HANDLER_SC: [Option<Box<dyn FnOnce() + 'static + Send>>; 32] = [
+    None, None, None, None, None, None, None, None, None, None,
+    None, None, None, None, None, None, None, None, None, None,
+    None, None, None, None, None, None, None, None, None, None,
+    None, None,
+];
 
 /// recurring/multi callinterrupt handler for GPIO 32-53 at bank 1
-static mut BANK1_HANDLER_MC: [Option<Box<dyn FnMut() + 'static + Send>>; 22] = [None; 22];
+static mut BANK1_HANDLER_MC: [Option<Box<dyn FnMut() + 'static + Send>>; 22] = [
+    None, None, None, None, None, None, None, None, None, None,
+    None, None, None, None, None, None, None, None, None, None,
+    None, None,
+];
 /// oneshot/single call interrupt handler for GPIO 32-53 at bank 1
-static mut BANK1_HANDLER_SC: [Option<Box<dyn FnOnce() + 'static + Send>>; 22] = [None; 22];
+static mut BANK1_HANDLER_SC: [Option<Box<dyn FnOnce() + 'static + Send>>; 22] = [
+    None, None, None, None, None, None, None, None, None, None,
+    None, None, None, None, None, None, None, None, None, None,
+    None, None,
+];
 
 /// Implement interrupt handler for GPIO driven interrupts from bank 0 (GPIO 0..31)
 /// # Safety
 /// As this handler is only called once at a time for the GPIO bank 0 we can safely access the
 /// static handler array. The only second place is from within the [Gpio] ``Singleton`` accessor, that when
 /// accessed has the interrupts disabled.
+#[cfg(not(feature = "ruspiro_pi3_test"))]
 #[IrqHandler(GpioBank0)]
 fn handle_gpio_bank0() {
     // get the events that raised this interrupt
@@ -335,6 +359,7 @@ fn handle_gpio_bank0() {
 /// As this handler is only called once at a time for the GPIO bank 1 we can safely access the
 /// static handler array. The only second place is from within the [Gpio] ``Singleton`` accessor, that when
 /// accessed has the interrupts disabled.
+#[cfg(not(feature = "ruspiro_pi3_test"))]
 #[IrqHandler(GpioBank1)]
 fn handle_gpio_bank1() {
     // get the events that raised this interrupt
