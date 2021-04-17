@@ -5,7 +5,7 @@
 CC = "aarch64-none-elf-gcc"
 AR = "aarch64-none-elf-ar"
 CFLAGS = "-march=armv8-a -Wall -O3 -nostdlib -nostartfiles -ffreestanding -mtune=cortex-a53"
-RUSTFLAGS = "-C linker=${CC} -C target-cpu=cortex-a53 -C link-arg=-nostartfiles -C link-arg=-T./link64.ld"
+RUSTFLAGS = "-C linker=${CC} -C target-cpu=cortex-a53 -C target-feature=+strict-align,+a53,+fp-armv8,+neon"
 BUILD_TARGET = "aarch64-unknown-linux-gnu"
 
 # CI Pipeline build settings
@@ -13,7 +13,7 @@ BUILD_TARGET = "aarch64-unknown-linux-gnu"
 CC = "aarch64-linux-gnu-gcc"
 AR = "aarch64-linux-gnu-ar"
 CFLAGS = "-march=armv8-a -Wall -O3 -nostdlib -nostartfiles -ffreestanding -mtune=cortex-a53"
-RUSTFLAGS = "-C target-cpu=cortex-a53 -C target-feature=+strict-align,+a53,+fp-armv8,+neon -C link-arg=-T./link64.ld"
+RUSTFLAGS = "-C linker=${CC} -C target-cpu=cortex-a53 -C target-feature=+strict-align,+a53,+fp-armv8,+neon"
 BUILD_TARGET = "aarch64-unknown-linux-gnu"
 
 [tasks.xbuild]
