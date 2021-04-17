@@ -6,6 +6,7 @@
 
   - move pipeline build to github actions
   - ensure proper compilation with latest nightly version (1.53.0) of rust
+  - change license to `Apache 2.0` **OR** `MIT`
 
 ## :banana: v0.4.1
   - ### :detective: Fixes

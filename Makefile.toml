@@ -26,6 +26,16 @@ run_task = [
     { name = "xbuild" }
 ]
 
+[tasks.publish_dry]
+env = { FEATURES = "" }
+command = "cargo"
+args = ["publish", "--target", "${BUILD_TARGET}", "--dry-run", "--features", "${FEATURES}"]
+
+[tasks.publish]
+env = { FEATURES = "" }
+command = "cargo"
+args = ["publish", "--target", "${BUILD_TARGET}", "--token", "${CRATES_TOKEN}", "--allow-dirty", "--features", "${FEATURES}"]
+
 [tasks.clean]
 command = "cargo"
 args = ["clean"]

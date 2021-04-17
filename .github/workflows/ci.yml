@@ -31,13 +31,10 @@ jobs:
           components: rust-src, llvm-tools-preview
           target: aarch64-unknown-none
 
-      - name: Install cargo-xbuild
-        run: cargo install cargo-xbuild
-
-      - name: Install cargo-make
-        uses: davidB/rust-cargo-make@v1
-        with:
-          version: 'latest'
+      - name: Install cargo tool
+        run: |
+          cargo install cargo-xbuild
+          cargo install cargo-make
 
       - if: ${{ github.event_name != 'pull_request' }}
         name: Remove patches from Cargo.toml
@@ -47,3 +44,134 @@ jobs:
 
       - name: Compile
         run: cargo make pi3 --profile pipeline
+
+  publish_dry:
+    name: Run Cargo Publish Dry-Run
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout the current code from github into the CI machine
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Install aarch64 gcc toolchain
+        run: sudo apt-get install -y gcc-aarch64-linux-gnu
+
+      - name: Install Rust Nightly and Cargo
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: nightly
+          override: true
+          components: rust-src, llvm-tools-preview
+          target: aarch64-unknown-none
+
+      - name: Install cargo tool
+        run: |
+          cargo install cargo-xbuild
+          cargo install cargo-make
+        
+      - name: Publish-Dry-Run
+        run: cargo make publish_dry --profile pipeline
+
+  prepare_release:
+    needs: [build, publish_dry]
+    if: ${{ github.ref == 'refs/heads/development' }}
+    name: Prepare Release - Create Release PR
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create PR against the release branch
+        uses: tretuna/sync-branches@1.2.0
+        with:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+          FROM_BRANCH: "development"
+          TO_BRANCH: "release"
+          PULL_REQUEST_TITLE: "Prepare Release and crates.io publishing"
+          PULL_REQUEST_BODY: "Automatic PR to the release branch as preperation to publish the library"
+
+  deploy:
+    needs: [build, publish_dry]
+    if: ${{ github.ref == 'refs/heads/release' }}
+    name: Create Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Prepre Crate Release Version
+        run: |
+          # extract current crate version from Cargo.toml
+          echo 'CRATE_VERSION=v'$(sed -En 's/^version.*=.*\"(.*)\".*$/\1/p' < Cargo.toml) >> $GITHUB_ENV
+          # retrieve last release version from github
+          echo 'LAST_VERSION='$(curl --silent "https://api.github.com/repos/$GITHUB_REPOSITORY/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/') >> $GITHUB_ENV
+
+      - if: ${{ env.LAST_VERSION == '' }}
+        name: Set base version
+        run: echo 'LAST_VERSION='v0.0.0 >> $GITHUB_ENV
+
+      - name: Create Tag
+        run: |
+          echo ${{ env.CRATE_VERSION }}
+          echo ${{ env.LAST_VERSION }}
+          git config --local user.name "2ndTaleStudio"
+          git config --local user.email "43264484+2ndTaleStudio@users.noreply.github.com"
+          # create the TAG required for the release
+          git tag ${{ env.CRATE_VERSION }} -m "${{ env.CRATE_VERSION }}"
+          # extract the release notes of the current release from the changelog
+          sed -En '/##.*:.*:.*'"${{ env.LAST_VERSION }}"'/q;p' CHANGELOG.md > RELEASENOTES.md
+          sed -i -e 's/^# Changelog/# Release Notes/g' RELEASENOTES.md
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+        with:
+          tag_name: ${{ env.CRATE_VERSION }}
+          release_name: Release ${{ env.CRATE_VERSION }}
+          body_path: RELEASENOTES.md
+          draft: false
+          prerelease: false
+
+  publish:
+    if: ${{ github.ref == 'refs/heads/release' }}
+    needs: deploy
+    name: Run Cargo Publish
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout the current code from github into the CI machine
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Install aarch64 gcc toolchain
+        run: sudo apt-get install -y gcc-aarch64-linux-gnu
+
+      - name: Install Rust Nightly and Cargo
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: nightly
+          override: true
+          components: rust-src, llvm-tools-preview
+          target: aarch64-unknown-none
+
+      - name: Install cargo tool
+        run: |
+          cargo install cargo-xbuild
+          cargo install cargo-make
+
+      - name: Get current version
+        run: echo 'CRATE_VERSION='$(sed -En 's/^version.*=.*\"(.*)\".*$/\1/p' < Cargo.toml) >> $GITHUB_ENV
+      
+      - name: Update version place holder in files
+        run: |
+          # before actually publishing replace the final version for doc and repository in the Crago.toml
+          sed -i -e 's/||VERSION||/'$CRATE_VERSION'/g' Cargo.toml
+          # also update the version in the lib.rs doc root url
+          sed -i -e 's/||VERSION||/'$CRATE_VERSION'/g' src/lib.rs
+          # and the README.md
+          sed -i -e 's/||VERSION||/'$CRATE_VERSION'/g' README.md
+        
+      - name: Publish
+        run: cargo make publish --env CRATES_TOKEN=${{ secrets.CRATES_TOKEN }} --profile pipeline

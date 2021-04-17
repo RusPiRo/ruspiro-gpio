@@ -24,7 +24,7 @@ use ruspiro_gpio::GPIO;
 fn demo() {
     // "grab" the GPIO in a safe way and use the provided closure to work with it
     // as long as the closure is executed, no other core can access the GPIO to configure pins etc.
-    GPIO.take_for(|gpio| {
+    GPIO.with_mut(|gpio| {
         // retrieving a pin gives a Result<>. If the pin is not already taken it returns an Ok()
         // with the pin.
         if let Ok(pin) = gpio.get_pin(17) {
@@ -38,4 +38,4 @@ fn demo() {
 
 ## License
 
-Licensed under Apache License, Version 2.0, ([LICENSE](LICENSE) or [http://www.apache.org/licenses/LICENSE-2.0](http://www.apache.org/licenses/LICENSE-2.0))
+Licensed under Apache License, Version 2.0, ([LICENSE-APACHE](LICENSE-APACHE) or http://www.apache.org/licenses/LICENSE-2.0) or MIT ([LICENSE-MIT](LICENSE-MIT) or http://opensource.org/licenses/MIT)) at your choice.

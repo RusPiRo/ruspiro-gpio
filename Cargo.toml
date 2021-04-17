@@ -5,7 +5,7 @@ version = "0.4.2" # remember to update html_root_url
 description = """
 This crates provides a GPIO peripheral abstraction of the Raspberry Pi
 """
-license = "Apache-2.0"
+license = "Apache-2.0 OR MIT"
 repository = "https://github.com/RusPiRo/ruspiro-gpio/tree/v||VERSION||"
 documentation = "https://docs.rs/ruspiro-gpio/||VERSION||"
 readme = "README.md"
