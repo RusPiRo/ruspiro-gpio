@@ -32,6 +32,9 @@ jobs:
           components: rustfmt, clippy, rust-src, llvm-tools-preview
           target: aarch64-unknown-none
 
+      - name: Install cargo-xbuild
+        run: cargo install cargo-xbuild
+        
       - name: Install cargo-make
         uses: davidB/rust-cargo-make@v1
         with:
