@@ -25,16 +25,15 @@ jobs:
       - name: Install Rust nightly and cargo
         uses: actions-rs/toolchain@v1
         with:
-          version: 'latest'
-          profile: minimal
           toolchain: nightly
+          profile: minimal
           override: true
-          components: rustfmt, clippy, rust-src, llvm-tools-preview
+          components: rust-src, llvm-tools-preview
           target: aarch64-unknown-none
 
       - name: Install cargo-xbuild
         run: cargo install cargo-xbuild
-        
+
       - name: Install cargo-make
         uses: davidB/rust-cargo-make@v1
         with:

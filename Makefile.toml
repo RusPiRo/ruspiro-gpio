@@ -1,21 +1,12 @@
 #***********************************************************************************************************************
 # cargo make tasks to build the example for the Raspberry Pi
 #***********************************************************************************************************************
-[env.a64]
+[env.development]
 CC = "aarch64-none-elf-gcc"
 AR = "aarch64-none-elf-ar"
-OC = "aarch64-none-elf-objcopy"
 CFLAGS = "-march=armv8-a -Wall -O3 -nostdlib -nostartfiles -ffreestanding -mtune=cortex-a53"
 RUSTFLAGS = "-C linker=${CC} -C target-cpu=cortex-a53 -C link-arg=-nostartfiles -C link-arg=-T./link64.ld"
 BUILD_TARGET = "aarch64-unknown-linux-gnu"
-
-[env.a32]
-CC = "arm-none-eabi-gcc"
-AR = "arm-none-eabi-ar"
-OC = "arm-none-eabi-objcopy"
-CFLAGS = "-mcpu=cortex-a53 -march=armv7-a -mfpu=neon -mfloat-abi=softfp -Wall -O3 -nostdlib -nostartfiles"
-RUSTFLAGS = "-C linker=${CC} -C target-cpu=cortex-a53 -C link-arg=-nostartfiles"
-BUILD_TARGET = "armv7a-none-eabi"
 
 # CI Pipeline build settings
 [env.pipeline]
@@ -23,7 +14,7 @@ CC = "aarch64-linux-gnu-gcc"
 AR = "aarch64-linux-gnu-ar"
 CFLAGS = "-march=armv8-a -Wall -O3 -nostdlib -nostartfiles -ffreestanding -mtune=cortex-a53"
 RUSTFLAGS = "-C target-cpu=cortex-a53 -C target-feature=+strict-align,+a53,+fp-armv8,+neon -C link-arg=-T./link64.ld"
-
+BUILD_TARGET = "aarch64-unknown-linux-gnu"
 
 [tasks.xbuild]
 command = "cargo"
