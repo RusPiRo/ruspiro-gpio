@@ -21,15 +21,15 @@ use core::ptr::{read_volatile, write_volatile};
 /// This access is unsafe as it circumvent all safe constructs available in the `ruspiro-gpio`crate.
 #[no_mangle]
 pub unsafe fn lit_debug_led(num: u32) {
-    let fsel_num = num / 10;
-    let fsel_shift = (num % 10) * 3;
-    let fsel_addr = 0x3f20_0000 + 4 * fsel_num;
-    let set_addr = 0x3f20_001c + num / 32;
-    let mut fsel: u32 = read_volatile(fsel_addr as *const u32);
-    fsel &= !(7 << fsel_shift);
-    fsel |= 1 << fsel_shift;
-    write_volatile(fsel_addr as *mut u32, fsel);
+  let fsel_num = num / 10;
+  let fsel_shift = (num % 10) * 3;
+  let fsel_addr = 0x3f20_0000 + 4 * fsel_num;
+  let set_addr = 0x3f20_001c + num / 32;
+  let mut fsel: u32 = read_volatile(fsel_addr as *const u32);
+  fsel &= !(7 << fsel_shift);
+  fsel |= 1 << fsel_shift;
+  write_volatile(fsel_addr as *mut u32, fsel);
 
-    let set: u32 = 1 << (num & 0x1F);
-    write_volatile(set_addr as *mut u32, set);
+  let set: u32 = 1 << (num & 0x1F);
+  write_volatile(set_addr as *mut u32, set);
 }
