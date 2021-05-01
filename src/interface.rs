@@ -9,173 +9,173 @@
 //!
 
 use crate::GpioEvent;
-use ruspiro_register::*;
+use ruspiro_mmio_register::*;
 
 // MMIO peripheral base address based on the pi model we build for
 #[cfg(feature = "ruspiro_pi3")]
-const PERIPHERAL_BASE: u32 = 0x3F00_0000;
+const PERIPHERAL_BASE: usize = 0x3F00_0000;
 
 /// Base address for GPIO MMIO registers
-const GPIO_BASE: u32 = PERIPHERAL_BASE + 0x0020_0000;
+const GPIO_BASE: usize = PERIPHERAL_BASE + 0x0020_0000;
 
 /// The two existing GPIO banks
 pub(crate) enum GpioBank {
-    Bank0,
-    Bank1,
+  Bank0,
+  Bank1,
 }
 
 // GPIO pin function register config values
 #[repr(u32)]
 pub(crate) enum Function {
-    Input = 0b000,
-    Output = 0b001,
-    Alt0 = 0b100,
-    Alt1 = 0b101,
-    Alt2 = 0b110,
-    Alt3 = 0b111,
-    Alt4 = 0b011,
-    Alt5 = 0b010,
+  Input = 0b000,
+  Output = 0b001,
+  Alt0 = 0b100,
+  Alt1 = 0b101,
+  Alt2 = 0b110,
+  Alt3 = 0b111,
+  Alt4 = 0b011,
+  Alt5 = 0b010,
 }
 
 // GPIO pull up/down register config values
 #[repr(u8)]
 pub(crate) enum Pud {
-    Disabled = 0b00,
-    PullDown = 0b01,
-    PullUp = 0b10,
+  Disabled = 0b00,
+  PullDown = 0b01,
+  PullUp = 0b10,
 }
 
 /// Activate the event detection for a specific gpio pin
 pub(crate) fn activate_detect_event(pin: u32, event: GpioEvent) {
-    let slot = pin & 31;
-    let event_field = RegisterField::<u32>::new(1, slot);
-    match pin / 32 {
-        0 => {
-            match event {
-                GpioEvent::RisingEdge => GPREN0::Register.modify(event_field, 1),
-                GpioEvent::FallingEdge => GPFEN0::Register.modify(event_field, 1),
-                GpioEvent::BothEdges => {
-                    GPREN0::Register.modify(event_field, 1);
-                    GPFEN0::Register.modify(event_field, 1)
-                }
-                GpioEvent::High => GPHEN0::Register.modify(event_field, 1),
-                GpioEvent::Low => GPLEN0::Register.modify(event_field, 1),
-                GpioEvent::AsyncRisingEdge => GPAREN0::Register.modify(event_field, 1),
-                GpioEvent::AsyncFallingEdge => GPAFEN0::Register.modify(event_field, 1),
-                GpioEvent::AsyncBothEdges => {
-                    GPAREN0::Register.modify(event_field, 1);
-                    GPAFEN0::Register.modify(event_field, 1)
-                }
-            };
+  let slot = pin & 31;
+  let event_field = RegisterField::<u32>::new(1, slot);
+  match pin / 32 {
+    0 => {
+      match event {
+        GpioEvent::RisingEdge => GPREN0::Register.modify(event_field, 1),
+        GpioEvent::FallingEdge => GPFEN0::Register.modify(event_field, 1),
+        GpioEvent::BothEdges => {
+          GPREN0::Register.modify(event_field, 1);
+          GPFEN0::Register.modify(event_field, 1)
         }
-        1 => {
-            match event {
-                GpioEvent::RisingEdge => GPREN1::Register.modify(event_field, 1),
-                GpioEvent::FallingEdge => GPFEN1::Register.modify(event_field, 1),
-                GpioEvent::BothEdges => {
-                    GPREN1::Register.modify(event_field, 1);
-                    GPFEN1::Register.modify(event_field, 1)
-                }
-                GpioEvent::High => GPHEN1::Register.modify(event_field, 1),
-                GpioEvent::Low => GPLEN1::Register.modify(event_field, 1),
-                GpioEvent::AsyncRisingEdge => GPAREN1::Register.modify(event_field, 1),
-                GpioEvent::AsyncFallingEdge => GPAFEN1::Register.modify(event_field, 1),
-                GpioEvent::AsyncBothEdges => {
-                    GPAREN1::Register.modify(event_field, 1);
-                    GPAFEN1::Register.modify(event_field, 1)
-                }
-            };
+        GpioEvent::High => GPHEN0::Register.modify(event_field, 1),
+        GpioEvent::Low => GPLEN0::Register.modify(event_field, 1),
+        GpioEvent::AsyncRisingEdge => GPAREN0::Register.modify(event_field, 1),
+        GpioEvent::AsyncFallingEdge => GPAFEN0::Register.modify(event_field, 1),
+        GpioEvent::AsyncBothEdges => {
+          GPAREN0::Register.modify(event_field, 1);
+          GPAFEN0::Register.modify(event_field, 1)
         }
-        _ => (),
+      };
     }
+    1 => {
+      match event {
+        GpioEvent::RisingEdge => GPREN1::Register.modify(event_field, 1),
+        GpioEvent::FallingEdge => GPFEN1::Register.modify(event_field, 1),
+        GpioEvent::BothEdges => {
+          GPREN1::Register.modify(event_field, 1);
+          GPFEN1::Register.modify(event_field, 1)
+        }
+        GpioEvent::High => GPHEN1::Register.modify(event_field, 1),
+        GpioEvent::Low => GPLEN1::Register.modify(event_field, 1),
+        GpioEvent::AsyncRisingEdge => GPAREN1::Register.modify(event_field, 1),
+        GpioEvent::AsyncFallingEdge => GPAFEN1::Register.modify(event_field, 1),
+        GpioEvent::AsyncBothEdges => {
+          GPAREN1::Register.modify(event_field, 1);
+          GPAFEN1::Register.modify(event_field, 1)
+        }
+      };
+    }
+    _ => (),
+  }
 }
 
 /// De-activate the event detection for a specific gpio pin
 #[allow(dead_code)]
 pub(crate) fn deactivate_detect_event(pin: u32, event: GpioEvent) {
-    let slot = pin & 31;
-    let event_field = RegisterField::<u32>::new(1, slot);
-    match pin / 32 {
-        0 => {
-            match event {
-                GpioEvent::RisingEdge => GPREN0::Register.modify(event_field, 0),
-                GpioEvent::FallingEdge => GPFEN0::Register.modify(event_field, 0),
-                GpioEvent::BothEdges => {
-                    GPREN0::Register.modify(event_field, 0);
-                    GPFEN0::Register.modify(event_field, 0)
-                }
-                GpioEvent::High => GPHEN0::Register.modify(event_field, 0),
-                GpioEvent::Low => GPLEN0::Register.modify(event_field, 0),
-                GpioEvent::AsyncRisingEdge => GPAREN0::Register.modify(event_field, 0),
-                GpioEvent::AsyncFallingEdge => GPAFEN0::Register.modify(event_field, 0),
-                GpioEvent::AsyncBothEdges => {
-                    GPAREN0::Register.modify(event_field, 0);
-                    GPAFEN0::Register.modify(event_field, 0)
-                }
-            };
+  let slot = pin & 31;
+  let event_field = RegisterField::<u32>::new(1, slot);
+  match pin / 32 {
+    0 => {
+      match event {
+        GpioEvent::RisingEdge => GPREN0::Register.modify(event_field, 0),
+        GpioEvent::FallingEdge => GPFEN0::Register.modify(event_field, 0),
+        GpioEvent::BothEdges => {
+          GPREN0::Register.modify(event_field, 0);
+          GPFEN0::Register.modify(event_field, 0)
         }
-        1 => {
-            match event {
-                GpioEvent::RisingEdge => GPREN1::Register.modify(event_field, 0),
-                GpioEvent::FallingEdge => GPFEN1::Register.modify(event_field, 0),
-                GpioEvent::BothEdges => {
-                    GPREN1::Register.modify(event_field, 0);
-                    GPFEN1::Register.modify(event_field, 0)
-                }
-                GpioEvent::High => GPHEN1::Register.modify(event_field, 0),
-                GpioEvent::Low => GPLEN1::Register.modify(event_field, 0),
-                GpioEvent::AsyncRisingEdge => GPAREN1::Register.modify(event_field, 0),
-                GpioEvent::AsyncFallingEdge => GPAFEN1::Register.modify(event_field, 0),
-                GpioEvent::AsyncBothEdges => {
-                    GPAREN1::Register.modify(event_field, 0);
-                    GPAFEN1::Register.modify(event_field, 0)
-                }
-            };
+        GpioEvent::High => GPHEN0::Register.modify(event_field, 0),
+        GpioEvent::Low => GPLEN0::Register.modify(event_field, 0),
+        GpioEvent::AsyncRisingEdge => GPAREN0::Register.modify(event_field, 0),
+        GpioEvent::AsyncFallingEdge => GPAFEN0::Register.modify(event_field, 0),
+        GpioEvent::AsyncBothEdges => {
+          GPAREN0::Register.modify(event_field, 0);
+          GPAFEN0::Register.modify(event_field, 0)
         }
-        _ => (),
+      };
     }
+    1 => {
+      match event {
+        GpioEvent::RisingEdge => GPREN1::Register.modify(event_field, 0),
+        GpioEvent::FallingEdge => GPFEN1::Register.modify(event_field, 0),
+        GpioEvent::BothEdges => {
+          GPREN1::Register.modify(event_field, 0);
+          GPFEN1::Register.modify(event_field, 0)
+        }
+        GpioEvent::High => GPHEN1::Register.modify(event_field, 0),
+        GpioEvent::Low => GPLEN1::Register.modify(event_field, 0),
+        GpioEvent::AsyncRisingEdge => GPAREN1::Register.modify(event_field, 0),
+        GpioEvent::AsyncFallingEdge => GPAFEN1::Register.modify(event_field, 0),
+        GpioEvent::AsyncBothEdges => {
+          GPAREN1::Register.modify(event_field, 0);
+          GPAFEN1::Register.modify(event_field, 0)
+        }
+      };
+    }
+    _ => (),
+  }
 }
 
 /// De-activate all events detection for a specific gpio pin
 pub(crate) fn deactivate_all_detect_events(pin: u32) {
-    let slot = pin & 31;
-    let event_field = RegisterField::<u32>::new(1, slot);
-    match pin / 32 {
-        0 => {
-            GPREN0::Register.modify(event_field, 0);
-            GPFEN0::Register.modify(event_field, 0);
-            GPHEN0::Register.modify(event_field, 0);
-            GPLEN0::Register.modify(event_field, 0);
-            GPAREN0::Register.modify(event_field, 0);
-            GPAFEN0::Register.modify(event_field, 0);
-        }
-        1 => {
-            GPREN1::Register.modify(event_field, 0);
-            GPFEN1::Register.modify(event_field, 0);
-            GPHEN1::Register.modify(event_field, 0);
-            GPLEN1::Register.modify(event_field, 0);
-            GPAREN1::Register.modify(event_field, 0);
-            GPAFEN1::Register.modify(event_field, 0);
-        }
-        _ => (),
+  let slot = pin & 31;
+  let event_field = RegisterField::<u32>::new(1, slot);
+  match pin / 32 {
+    0 => {
+      GPREN0::Register.modify(event_field, 0);
+      GPFEN0::Register.modify(event_field, 0);
+      GPHEN0::Register.modify(event_field, 0);
+      GPLEN0::Register.modify(event_field, 0);
+      GPAREN0::Register.modify(event_field, 0);
+      GPAFEN0::Register.modify(event_field, 0);
     }
+    1 => {
+      GPREN1::Register.modify(event_field, 0);
+      GPFEN1::Register.modify(event_field, 0);
+      GPHEN1::Register.modify(event_field, 0);
+      GPLEN1::Register.modify(event_field, 0);
+      GPAREN1::Register.modify(event_field, 0);
+      GPAFEN1::Register.modify(event_field, 0);
+    }
+    _ => (),
+  }
 }
 
 /// Read the event detect status register for the specified bank
 pub(crate) fn get_detected_events(bank: GpioBank) -> u32 {
-    match bank {
-        GpioBank::Bank0 => GPEDS0::Register.get(),
-        GpioBank::Bank1 => GPEDS1::Register.get(),
-    }
+  match bank {
+    GpioBank::Bank0 => GPEDS0::Register.get(),
+    GpioBank::Bank1 => GPEDS1::Register.get(),
+  }
 }
 
 /// Reset the event detect status register for the specified bank to acknowledge the
 /// event within the interrupt handler
 pub(crate) fn acknowledge_detected_events(events: u32, bank: GpioBank) {
-    match bank {
-        GpioBank::Bank0 => GPEDS0::Register.set(events),
-        GpioBank::Bank1 => GPEDS1::Register.set(events),
-    }
+  match bank {
+    GpioBank::Bank0 => GPEDS0::Register.set(events),
+    GpioBank::Bank1 => GPEDS1::Register.set(events),
+  }
 }
 
 // Define the registers of the GPIO that are used to access the pin's
