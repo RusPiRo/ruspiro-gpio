@@ -1,6 +1,6 @@
 # RusPiRo GPIO access abstraction for Raspberry Pi
 
-This crate provide as simple to use and safe abstraction of the GPIO's available on the Raspberry Pi 3. The GPIO configuration requires access to MMIO registers with a specific memory base address. As this might differ between different models the right address is choosen based on the given ``ruspiro_pi3`` feature while compiling.
+This crate provide a simple to use and safe abstraction of the GPIO peripheral available on the Raspberry Pi 3. The GPIO configuration requires access to MMIO registers with a specific memory base address. As this might differ between different models the right address is choosen based on the given ``ruspiro_pi3`` feature while compiling.
 
 ![CI](https://github.com/RusPiRo/ruspiro-gpio/workflows/CI/badge.svg?branch=development)
 [![Latest Version](https://img.shields.io/crates/v/ruspiro-gpio.svg)](https://crates.io/crates/ruspiro-gpio)
@@ -35,6 +35,10 @@ fn demo() {
     })
 }
 ```
+
+## Usage Hint
+
+The GPIO crate provides access to the peripheral through a `Singleton` to ensure safe access from each core of the Raspberry Pi to it. This `Singleton` uses locks and atomic operations to safeguard the access. Those atomic operations does only work on the Raspberry Pi if the MMU is configured and active (with active caches). So to properly use this crate in your project please check the [ruspiro-mmu](https://crates.io/crates/ruspiro-mmu) crate as well and how to configure and activate the MMU.
 
 ## License
 
