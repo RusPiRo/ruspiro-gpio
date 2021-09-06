@@ -1,5 +1,15 @@
 # Changelog
 
+## :melon: v0.4.3
+
+This is a maintenance release ensuring succesful build with the latest nightly (2021-09-05) version.
+
+- ### :wrench: Maintenance
+
+  - build the single crate with `aarch-unknown-none` target
+  - remove `const_fn` feature
+  - change usage of `llvm_asm` feature and macro into `asm`
+  
 ## :peach: v0.4.2
 
 This is mainly a maintenance release. It contains the migration to the github build pipeline and some minor adjustments.
