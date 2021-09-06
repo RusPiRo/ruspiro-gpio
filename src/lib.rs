@@ -6,7 +6,7 @@
  **********************************************************************************************************************/
 #![doc(html_root_url = "https://docs.rs/ruspiro-gpio/||VERSION||")]
 #![cfg_attr(not(any(test, doctest)), no_std)]
-#![feature(llvm_asm, const_fn)]
+#![feature(asm)]
 //! # Raspberry Pi GPIO access abstraction
 //!
 //! This crate provide as simple to use and safe abstraction of the GPIO's available on the Raspberry Pi 3. The GPIO
